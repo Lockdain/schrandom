@@ -1,36 +1,41 @@
 package ru.asergeenko.schrandom.intf.connector
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
+import monix.execution.CancelableFuture
 import org.apache.avro.Schema
 import org.slf4j.LoggerFactory
 import pureconfig.ConfigReader.Result
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import ru.asergeenko.schrandom.conf.ServiceProps
+import sttp.client3.asynchttpclient.monix.AsyncHttpClientMonixBackend
+import sttp.client3.{ asString, basicRequest, Response, UriContext }
 
 object ApicurioConnector extends RegistryConnector {
   private val config: Result[ServiceProps] = ConfigSource.default.load[ServiceProps]
-  private implicit val system              = ActorSystem("schema-request")
-  private implicit val executionContext    = system.dispatcher
   private val logger                       = LoggerFactory.getLogger(this.getClass.toString)
 
-  override def getSchema(schemaName: String, schemaVersion: String) = {
-    import akka.http.scaladsl.client.RequestBuilding.Get
+  override def getSchema(schemaName: String, schemaVersion: String): CancelableFuture[Schema] = {
     val host             = config.map(_.schemaRegistry.host).toOption.get
     val port             = config.map(_.schemaRegistry.port).toOption.get
-    val artifactEndpoint = s"/api/artifacts/$schemaName/versions/$schemaVersion"
+    val artifactEndpoint = s"$host:$port/api/artifacts/$schemaName/versions/$schemaVersion"
+    logger.info(s"Artifact endpoint for schema $schemaName is $artifactEndpoint")
 
-    val getSchemaRequest = Get(host + ":" + port + artifactEndpoint)
-    val eventualSchema =
-      Http()
-        .singleRequest(getSchemaRequest)
-        .map(res =>
-          Unmarshal(res).to[String]
-        )
-        .flatten
-        .map(r => Schema.parse(r))
+    import monix.execution.Scheduler.Implicits.global
+
+    val getSchemaRequest = basicRequest
+      .get(uri"$artifactEndpoint")
+      .response(asString.getRight)
+
+    val eventualSchema = AsyncHttpClientMonixBackend
+      .resource()
+      .use { backend =>
+        getSchemaRequest.send(backend).map { response: Response[String] =>
+          logger.info(s"Get schema request for $schemaName was successful!")
+          val schema = Schema.parse(response.body)
+          schema
+        }
+      }
+      .runToFuture
     eventualSchema
   }
 }

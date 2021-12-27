@@ -3,11 +3,13 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val Tapir        = "0.20.0-M2"
+    lazy val Tapir        = "3.3.9"
     lazy val Avro         = "1.9.2"
     lazy val PureConfig   = "0.17.1"
     lazy val AlpakkaKafka = "2.1.1"
     lazy val AkkaStream   = "2.6.8"
+    lazy val Monix        = "3.4.0"
+    lazy val MonixKafka   = "1.0.0-RC6"
   }
 
   object Config {
@@ -20,9 +22,7 @@ object Dependencies {
   }
 
   object Tapir {
-    lazy val AkkaHttp = "com.softwaremill.sttp.tapir" %% "tapir-akka-http-server" % Versions.Tapir
-    lazy val Core     = "com.softwaremill.sttp.tapir" %% "tapir-core"             % Versions.Tapir
-    lazy val All      = Seq(AkkaHttp, Core)
+    lazy val AsyncMonix = "com.softwaremill.sttp.client3" %% "async-http-client-backend-monix" % Versions.Tapir
   }
 
   object Kafka {
@@ -33,6 +33,11 @@ object Dependencies {
 
   object Avro {
     lazy val Core = "org.apache.avro" % "avro" % Versions.Avro
+  }
+
+  object Monix {
+    lazy val Core  = "io.monix" %% "monix"          % Versions.Monix
+    lazy val Kafka = "io.monix" %% "monix-kafka-1x" % Versions.MonixKafka
   }
 
 }

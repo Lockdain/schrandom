@@ -1,10 +1,12 @@
 package ru.asergeenko.schrandom.intf
 
-import org.apache.avro.Schema
-import ru.asergeenko.schrandom.settings.GeneratorBehavior
+import ru.asergeenko.schrandom.generator.UnboundedGenerator
+import ru.asergeenko.schrandom.settings.{GeneratorBehavior, MessageType}
 
 object MessageGeneratorBuilder {
-  def buildGenerator(schema: Schema, behavior: GeneratorBehavior): AbstractGenerator = {
-
+  def build(topic: String, behavior: GeneratorBehavior): AbstractGenerator = {
+    behavior.messageType match {
+      case MessageType.JSON => new UnboundedGenerator(topic, behavior)
+    }
   }
 }

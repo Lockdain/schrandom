@@ -1,9 +1,8 @@
 package ru.asergeenko.schrandom.intf.connector
 
+import monix.execution.CancelableFuture
 import org.apache.avro.Schema
 
-import scala.concurrent.Future
-
 trait RegistryConnector {
-  def getSchema(name: String, version: String): Future[Schema]
+  def getSchema(name: String, version: String): CancelableFuture[Schema]
 }
