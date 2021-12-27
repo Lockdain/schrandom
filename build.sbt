@@ -9,6 +9,8 @@ scalaVersion := "2.13.7"
 
 libraryDependencies ++= Seq(
   Dependencies.Tapir.AsyncMonix,
+  Dependencies.Tapir.NettyServer,
+  Dependencies.Tapir.Core,
   Dependencies.Avro.Core,
   Dependencies.Config.PureConfig,
   Dependencies.Logging.Logback,
