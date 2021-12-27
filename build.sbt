@@ -15,7 +15,5 @@ libraryDependencies ++= Seq(
   Dependencies.Config.PureConfig,
   Dependencies.Logging.Logback,
   Dependencies.Monix.Core,
-  Dependencies.Monix.Kafka
+  Dependencies.Kafka.KafkaClient
 )
-
-dependencyOverrides += "org.apache.kafka" % "kafka-clients" % "2.1.0"

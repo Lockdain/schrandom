@@ -9,8 +9,9 @@ object Dependencies {
     lazy val AlpakkaKafka = "2.1.1"
     lazy val AkkaStream   = "2.6.8"
     lazy val Monix        = "3.4.0"
-    lazy val MonixKafka   = "1.0.0-RC6"
+    lazy val MonixKafka   = "1.0.0-RC7"
     lazy val Tapir        = "0.20.0-M3"
+    lazy val KafkaClient  = "2.6.0"
   }
 
   object Config {
@@ -29,9 +30,7 @@ object Dependencies {
   }
 
   object Kafka {
-    lazy val AkkaStreamKafka = "com.typesafe.akka" %% "akka-stream-kafka" % Versions.AlpakkaKafka
-    lazy val AkkaStream      = "com.typesafe.akka" %% "akka-stream"       % Versions.AkkaStream
-    lazy val All             = Seq(AkkaStream, AkkaStreamKafka)
+    lazy val KafkaClient = "org.apache.kafka" % "kafka-clients" % Versions.KafkaClient
   }
 
   object Avro {
