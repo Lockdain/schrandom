@@ -8,10 +8,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object SchrandomController {
-  var schedulers = scala.collection.mutable.Map[String, Cancelable]()
+  private var schedulers = scala.collection.mutable.Map[String, Cancelable]()
 
-  val controlEndpoint = endpoint.get
-    .in("schrandom")
+  private val engageEndpoint = endpoint.get
+    .in("schrandom" / "engage")
     .in(query[String]("topic"))
     .in(query[String]("schema"))
     .in(query[String]("version"))
@@ -19,12 +19,24 @@ object SchrandomController {
     .serverLogic { case (topic, schema, version) =>
       schedulers(topic) = WorkflowLogic.initiateWorkflow(topic, schema, version)
       Future.successful[Either[Unit, String]](
-        Right(s"Request received with topic=$topic, schema=$schema and version=$version")
+        Right(s"Request received with topic=$topic, schema=$schema and version=$version.")
       )
     }
 
-  val binding = NettyFutureServer()
-    .addEndpoint(controlEndpoint)
+  private val disengageEndpoint = endpoint.get
+    .in("schrandom" / "disengage")
+    .in(query[String]("topic"))
+    .out(stringBody)
+    .serverLogic { topic =>
+      schedulers.get(topic).foreach(_.cancel)
+      Future.successful[Either[Unit, String]](
+        Right(s"Disengagement request for topic $topic is received.")
+      )
+    }
+
+  NettyFutureServer()
+    .addEndpoint(engageEndpoint)
+    .addEndpoint(disengageEndpoint)
     .host("0.0.0.0")
     .port(8085)
     .start()

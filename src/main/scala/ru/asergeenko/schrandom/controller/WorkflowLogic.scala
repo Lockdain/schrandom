@@ -18,7 +18,7 @@ object WorkflowLogic {
 
     import java.util.concurrent.TimeUnit
     val cancelable: Cancelable = scheduler
-      .scheduleAtFixedRate(0, 1, TimeUnit.MILLISECONDS, jsonGenerator)
+      .scheduleAtFixedRate(0, 1000, TimeUnit.MILLISECONDS, jsonGenerator)
 
     cancelable
   }
