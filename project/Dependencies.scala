@@ -11,6 +11,7 @@ object Dependencies {
     lazy val Monix        = "3.4.0"
     lazy val Tapir        = "0.20.0-M3"
     lazy val KafkaClient  = "2.6.0"
+    lazy val ScalaTest    = "3.3.0-SNAP3"
   }
 
   object Config {

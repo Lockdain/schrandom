@@ -5,6 +5,7 @@ name := "schrandom"
 version := "0.1"
 
 scalaVersion := "2.13.7"
+coverageEnabled := true
 //scalacOptions += "-Ypartial-unification"
 
 libraryDependencies ++= Seq(
@@ -16,5 +17,6 @@ libraryDependencies ++= Seq(
   Dependencies.Config.PureConfig,
   Dependencies.Logging.Logback,
   Dependencies.Monix.Core,
-  Dependencies.Kafka.KafkaClient
+  Dependencies.Kafka.KafkaClient,
+  "org.scalatest" %% "scalatest" % "3.3.0-SNAP3" % Test
 )
