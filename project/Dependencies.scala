@@ -9,7 +9,6 @@ object Dependencies {
     lazy val AlpakkaKafka = "2.1.1"
     lazy val AkkaStream   = "2.6.8"
     lazy val Monix        = "3.4.0"
-    lazy val MonixKafka   = "1.0.0-RC7"
     lazy val Tapir        = "0.20.0-M3"
     lazy val KafkaClient  = "2.6.0"
   }
@@ -39,8 +38,7 @@ object Dependencies {
   }
 
   object Monix {
-    lazy val Core  = "io.monix" %% "monix"          % Versions.Monix
-    lazy val Kafka = "io.monix" %% "monix-kafka-1x" % Versions.MonixKafka
+    lazy val Core = "io.monix" %% "monix" % Versions.Monix
   }
 
 }
