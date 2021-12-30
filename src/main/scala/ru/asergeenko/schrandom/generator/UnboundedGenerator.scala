@@ -2,7 +2,7 @@ package ru.asergeenko.schrandom.generator
 
 import org.slf4j.LoggerFactory
 import ru.asergeenko.schrandom.intf.AbstractGenerator
-import ru.asergeenko.schrandom.intf.connector.KafkaSpecificProducer
+import ru.asergeenko.schrandom.connector.KafkaSpecificProducer
 import ru.asergeenko.schrandom.settings.GeneratorBehavior
 
 class UnboundedGenerator(topic: String, behavior: GeneratorBehavior) extends AbstractGenerator with Runnable {

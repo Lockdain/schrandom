@@ -1,4 +1,4 @@
-package ru.asergeenko.schrandom.intf.connector
+package ru.asergeenko.schrandom.connector
 
 import pureconfig.ConfigReader.Result
 import pureconfig.ConfigSource
