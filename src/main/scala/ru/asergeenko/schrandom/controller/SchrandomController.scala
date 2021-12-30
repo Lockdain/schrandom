@@ -10,6 +10,7 @@ import sttp.tapir.server.netty.NettyFutureServer
 import scala.concurrent.ExecutionContext.Implicits.global
 import pureconfig.generic.auto._
 import ru.asergeenko.schrandom.settings.PublisherSettings
+import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 import scala.concurrent.Future
@@ -75,14 +76,18 @@ object SchrandomController {
     disengageEndpoint
   )
 
+  private val swaggerEndpoints: List[ServerEndpoint[Any, Future]] = SwaggerInterpreter()
+    .fromServerEndpoints[Future](SchrandomController.endpoints, "Schrandom", "0.0.1")
+
   NettyFutureServer()
     .addEndpoint(engageEndpoint)
     .addEndpoint(disengageEndpoint)
     .addEndpoint(engageWithSchemaEndpoint)
+    .addEndpoints(swaggerEndpoints)
     .host("0.0.0.0")
     .port(port.toInt)
     .start()
 
   logger.info(s"Engagement controller started at http://localhost:$port.")
-
+  logger.info(s"Swagger UI started at http://localhost:$port/docs.")
 }
