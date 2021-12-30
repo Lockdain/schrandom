@@ -1,6 +1,7 @@
 package ru.asergeenko.schrandom.controller
 
 import monix.execution.Cancelable
+import org.slf4j.LoggerFactory
 import pureconfig.ConfigSource
 import ru.asergeenko.schrandom.conf.ServiceProps
 import sttp.tapir._
@@ -9,6 +10,7 @@ import sttp.tapir.server.netty.NettyFutureServer
 import scala.concurrent.ExecutionContext.Implicits.global
 import pureconfig.generic.auto._
 import ru.asergeenko.schrandom.settings.PublisherSettings
+import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 import scala.concurrent.Future
 
@@ -16,6 +18,7 @@ object SchrandomController {
   private val config     = ConfigSource.default.load[ServiceProps]
   private val port       = config.map(_.schrandom.port).toOption.get
   private val schedulers = scala.collection.mutable.Map[String, Cancelable]()
+  private val logger     = LoggerFactory.getLogger(this.getClass.toString)
 
   private val engageEndpoint = endpoint.get
     .in("schrandom" / "engage")
@@ -33,7 +36,7 @@ object SchrandomController {
       )
     }
 
-  private val engageWithSchema = endpoint.post
+  private val engageWithSchemaEndpoint = endpoint.post
     .in("schrandom" / "engage")
     .in(stringBody)
     .in(
@@ -45,7 +48,7 @@ object SchrandomController {
         .description("Message period")
     )
     .out(stringBody)
-    .serverLogic { case(schema, topic, period) =>
+    .serverLogic { case (schema, topic, period) =>
       schedulers(topic) = WorkflowLogic.initiateStandaloneWorkflow(
         PublisherSettings(topic, None, "", period),
         schema
@@ -58,7 +61,6 @@ object SchrandomController {
   private val disengageEndpoint = endpoint.get
     .in("schrandom" / "disengage")
     .in(query[String]("topic"))
-
     .out(stringBody)
     .serverLogic { topic =>
       schedulers.get(topic).foreach(_.cancel)
@@ -67,10 +69,20 @@ object SchrandomController {
       )
     }
 
+  val endpoints = List(
+    engageEndpoint,
+    engageWithSchemaEndpoint,
+    disengageEndpoint
+  )
+
   NettyFutureServer()
     .addEndpoint(engageEndpoint)
     .addEndpoint(disengageEndpoint)
+    .addEndpoint(engageWithSchemaEndpoint)
     .host("0.0.0.0")
     .port(port.toInt)
     .start()
+
+  logger.info(s"Engagement controller started at http://localhost:$port.")
+
 }

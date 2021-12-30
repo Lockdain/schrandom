@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
   Dependencies.Tapir.AsyncMonix,
   Dependencies.Tapir.NettyServer,
   Dependencies.Tapir.Core,
+  Dependencies.Tapir.Swagger,
   Dependencies.Avro.Core,
   Dependencies.Config.PureConfig,
   Dependencies.Logging.Logback,

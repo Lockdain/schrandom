@@ -27,6 +27,7 @@ object Dependencies {
     lazy val Core        = "com.softwaremill.sttp.tapir"   %% "tapir-core"                      % Versions.Tapir
     lazy val AsyncMonix  = "com.softwaremill.sttp.client3" %% "async-http-client-backend-monix" % Versions.TapirBackend
     lazy val NettyServer = "com.softwaremill.sttp.tapir"   %% "tapir-netty-server"              % Versions.Tapir
+    lazy val Swagger     = "com.softwaremill.sttp.tapir"   %% "tapir-swagger-ui-bundle"         % Versions.Tapir
   }
 
   object Kafka {
