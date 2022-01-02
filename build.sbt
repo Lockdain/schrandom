@@ -19,3 +19,6 @@ libraryDependencies ++= Seq(
   "io.github.embeddedkafka" %% "embedded-kafka" % "2.8.1" % Test
 
 )
+
+parallelExecution in Test := false
+
