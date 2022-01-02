@@ -11,7 +11,7 @@ import org.scalatest.BeforeAndAfterAll
 class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAfterAll with EmbeddedKafka {
   val kafkaPort = 6001
 
-  override def beforeAll = {
+  override def beforeAll: Unit = {
     EmbeddedKafka.start
   }
 
@@ -28,7 +28,7 @@ class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAft
     }
   }
 
-  override def afterAll = {
+  override def afterAll: Unit = {
     EmbeddedKafka.stop
   }
 }

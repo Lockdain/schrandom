@@ -26,7 +26,7 @@ object WorkflowLogic {
     cancelable
   }
 
-  def initiateStandaloneWorkflow(settings: PublisherSettings, schemaBody: String) = {
+  def initiateStandaloneWorkflow(settings: PublisherSettings, schemaBody: String): Cancelable = {
     logger.info(s"Registry workflow for topic=${settings.topic} was initiated")
     // TODO: That's looks strange
     val schemaTask = Task { Schema.parse(schemaBody) }

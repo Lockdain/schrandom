@@ -26,7 +26,7 @@ class KafkaSpecificProducer extends KafkaConnector {
   })
     .getOrElse("")
 
-  override def createJsonProducer(bootstrapServers: String) = {
+  override def createJsonProducer(bootstrapServers: String): KafkaProducer[String, String] = {
     val kafkaProducerProps: Properties = {
       val props = new Properties()
       props.put("bootstrap.servers", bootstrapServers)
