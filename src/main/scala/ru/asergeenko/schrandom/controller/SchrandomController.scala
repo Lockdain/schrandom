@@ -3,7 +3,7 @@ package ru.asergeenko.schrandom.controller
 import monix.execution.Cancelable
 import org.slf4j.LoggerFactory
 import pureconfig.ConfigSource
-import ru.asergeenko.schrandom.conf.ServiceProps
+import ru.asergeenko.schrandom.conf.{AnyHostPort, ServiceProps}
 import sttp.tapir._
 import sttp.tapir.server.netty.NettyFutureServer
 
@@ -17,9 +17,12 @@ import scala.concurrent.Future
 
 object SchrandomController {
   private val config     = ConfigSource.default.load[ServiceProps]
-  private val port       = config.map(_.schrandom.port).toOption.get
   private val schedulers = scala.collection.mutable.Map[String, Cancelable]()
   private val logger     = LoggerFactory.getLogger(this.getClass.toString)
+
+  private val maybeHostPort: Option[AnyHostPort] = for {
+    port <- config.map(_.schrandom.port).toOption
+  } yield AnyHostPort("localhost", port)
 
   private val engageEndpoint = endpoint.get
     .in("schrandom" / "engage")
@@ -79,15 +82,17 @@ object SchrandomController {
   private val swaggerEndpoints: List[ServerEndpoint[Any, Future]] = SwaggerInterpreter()
     .fromServerEndpoints[Future](SchrandomController.endpoints, "Schrandom", "0.0.1")
 
+  private val schrandomPort = maybeHostPort.map(_.port.toInt).getOrElse(1)
+
   NettyFutureServer()
     .addEndpoint(engageEndpoint)
     .addEndpoint(disengageEndpoint)
     .addEndpoint(engageWithSchemaEndpoint)
     .addEndpoints(swaggerEndpoints)
     .host("0.0.0.0")
-    .port(port.toInt)
+    .port(schrandomPort)
     .start()
 
-  logger.info(s"Engagement controller started at http://localhost:$port.")
-  logger.info(s"Swagger UI started at http://localhost:$port/docs.")
+  logger.info(s"Engagement controller started at http://localhost:$schrandomPort.")
+  logger.info(s"Swagger UI started at http://localhost:$schrandomPort/docs.")
 }
