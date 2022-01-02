@@ -19,23 +19,31 @@ class KafkaSpecificProducer extends KafkaConnector {
   private implicit val scheduler: Scheduler = monix.execution.Scheduler.global
 
   private val bootstrapServers = (host + ":" + port)
-  val kafkaProducerProps: Properties = {
-    val props = new Properties()
-    props.put("bootstrap.servers", bootstrapServers)
-    props.put("key.serializer", classOf[StringSerializer].getName)
-    props.put("value.serializer", classOf[StringSerializer].getName)
-    props
+  override def createJsonProducer(bootstrapServers: String) = {
+    val kafkaProducerProps: Properties = {
+      val props = new Properties()
+      props.put("bootstrap.servers", bootstrapServers)
+      props.put("key.serializer", classOf[StringSerializer].getName)
+      props.put("value.serializer", classOf[StringSerializer].getName)
+      props
+    }
+    val jsonProducer = new KafkaProducer[String, String](kafkaProducerProps)
+    jsonProducer
   }
-  private val jsonProducer     = new KafkaProducer[String, String](kafkaProducerProps)
 
-  override def publishAvro: Unit = {}
+  private val producer = createJsonProducer(bootstrapServers)
 
-  logger.info(s"Kafka Bootstrap servers: $bootstrapServers")
-  override def publishJson(topic: String, event: CancelableFuture[String]): Unit = {
+  override def publishJson(
+    topic: String,
+    event: CancelableFuture[String],
+    producer: KafkaProducer[String, String] = producer
+  ): Unit = {
     logger.trace(s"New JSON will be published to the topic=$topic")
     event.onComplete { value =>
       val record = new ProducerRecord[String, String](topic, value.get)
-      jsonProducer.send(record)
+      producer.send(record)
     }
   }
+
+  override def publishAvro: Unit = {}
 }
