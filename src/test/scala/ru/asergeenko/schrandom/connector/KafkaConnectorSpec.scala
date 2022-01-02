@@ -1,15 +1,16 @@
 package ru.asergeenko.schrandom.connector
 
-import io.github.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
 import monix.eval.Task
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import monix.execution.Scheduler.Implicits.global
-import org.apache.kafka.common.serialization.{ Deserializer, StringDeserializer }
+import io.github.embeddedkafka.schemaregistry.{EmbeddedKafka, EmbeddedKafkaConfig}
+import org.apache.kafka.common.serialization.{Deserializer, StringDeserializer}
 import org.scalatest.BeforeAndAfterAll
 
 class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAfterAll with EmbeddedKafka {
-  val kafkaPort = 6001
+  val kafkaPort = 6005
+  implicit val config = EmbeddedKafkaConfig(kafkaPort = kafkaPort)
 
   override def beforeAll: Unit = {
     EmbeddedKafka.start
@@ -17,14 +18,14 @@ class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAft
 
   "Kafka producer" should {
     "produce JSON messages to Kafka" in {
-      val producer: KafkaConnector                    = new KafkaSpecificProducer
-      val jsonProducer                                = producer.createJsonProducer("localhost:" + kafkaPort)
-      val task                                        = Task("test")
-      producer.publishJson("test", task.runToFuture, jsonProducer)
-      implicit val deserializer: Deserializer[String] = new StringDeserializer
-      consumeFirstMessageFrom("test") shouldBe "test"
-      EmbeddedKafka.stop
-      EmbeddedKafka.stopZooKeeper
+      withRunningKafka {
+        val producer: KafkaConnector = new KafkaSpecificProducer
+        val jsonProducer = producer.createJsonProducer("0.0.0.0:" + kafkaPort)
+        val task = Task("test")
+        producer.publishJson("test", task.runToFuture, jsonProducer)
+        implicit val deserializer: Deserializer[String] = new StringDeserializer
+        consumeFirstMessageFrom("test") shouldBe "test"
+      }
     }
   }
 
