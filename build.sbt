@@ -3,7 +3,7 @@ name := "schrandom"
 version := "0.0.1"
 
 scalaVersion := "2.13.7"
-coverageEnabled := true
+//coverageEnabled := true
 
 libraryDependencies ++= Seq(
   Dependencies.Tapir.AsyncMonix,
