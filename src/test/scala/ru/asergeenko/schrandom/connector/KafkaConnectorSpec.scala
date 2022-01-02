@@ -13,7 +13,7 @@ class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAft
   implicit val config = EmbeddedKafkaConfig(kafkaPort = kafkaPort)
 
   override def beforeAll: Unit = {
-    EmbeddedKafka.start
+//    EmbeddedKafka.start
   }
 
   "Kafka producer" should {
