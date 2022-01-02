@@ -1,6 +1,7 @@
 package ru.asergeenko.schrandom.connector
 
 import monix.execution.CancelableFuture
+import monix.execution.Scheduler.Implicits.global
 import org.apache.avro.Schema
 import org.slf4j.LoggerFactory
 import pureconfig.ConfigReader.Result
@@ -13,18 +14,19 @@ import sttp.client3.{ asString, basicRequest, Response, UriContext }
 object ApicurioConnector extends RegistryConnector {
   private val config: Result[ServiceProps] = ConfigSource.default.load[ServiceProps]
   private val logger                       = LoggerFactory.getLogger(this.getClass.toString)
-  private val host                         = config.map(_.schemaRegistry.host).toOption.get
-  private val port                         = config.map(_.schemaRegistry.port).toOption.get
+  private val maybeHostPort: Option[AnyHostPort] = for {
+             host <- config.map(_.schemaRegistry.host).toOption
+             port <- config.map(_.schemaRegistry.port).toOption
+  } yield AnyHostPort(host, port)
 
   override def getSchema(
-    schemaName: String,
-    schemaVersion: String,
-    hostPort: AnyHostPort = AnyHostPort(host, port)
+  schemaName: String,
+  schemaVersion: String,
+  hostPort: AnyHostPort = maybeHostPort.getOrElse(AnyHostPort("", ""))
   ): CancelableFuture[Schema] = {
     val artifactEndpoint = s"${hostPort.host}:${hostPort.port}/api/artifacts/$schemaName/versions/$schemaVersion"
     logger.info(s"Artifact endpoint for schema $schemaName is $artifactEndpoint")
 
-    import monix.execution.Scheduler.Implicits.global
 
     val getSchemaRequest = basicRequest
       .get(uri"$artifactEndpoint")

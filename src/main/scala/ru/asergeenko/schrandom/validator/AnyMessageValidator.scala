@@ -1,11 +1,11 @@
 package ru.asergeenko.schrandom.validator
-import org.apache.avro.Schema
+import org.apache.avro.{AvroRuntimeException, Schema}
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.specific.SpecificRecordBase
 import org.slf4j.LoggerFactory
 
-import java.io.{ ByteArrayInputStream, DataInputStream }
+import java.io.{ByteArrayInputStream, DataInputStream}
 
 object AnyMessageValidator extends MessageValidator {
   private val logger = LoggerFactory.getLogger(this.getClass.toString)
@@ -20,7 +20,7 @@ object AnyMessageValidator extends MessageValidator {
       reader.read(AnyRef, decoder)
       true
     } catch {
-      case e: Exception =>
+      case e: AvroRuntimeException =>
         logger.warn(s"Was unable to validate a message against schema=${schema.getDoc}", e)
         false
     }
