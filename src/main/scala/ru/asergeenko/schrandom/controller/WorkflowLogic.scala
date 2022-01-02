@@ -9,6 +9,7 @@ import monix.execution.Scheduler.{ global => scheduler }
 import monix.execution.Scheduler.Implicits.global
 import org.apache.avro.Schema
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 
 object WorkflowLogic {
   private val logger = LoggerFactory.getLogger(this.getClass.toString)
@@ -19,7 +20,6 @@ object WorkflowLogic {
     val behavior       = GeneratorBehavior(eventualSchema, GeneratorType.UNBOUNDED, MessageType.JSON)
     val jsonGenerator  = MessageGeneratorBuilder.build(settings.topic, behavior)
 
-    import java.util.concurrent.TimeUnit
     val cancelable: Cancelable = scheduler
       .scheduleAtFixedRate(0, settings.period, TimeUnit.MILLISECONDS, jsonGenerator)
 
