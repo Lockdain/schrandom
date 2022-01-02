@@ -1,11 +1,9 @@
-import Dependencies._
-
 name := "schrandom"
 
-version := "0.1"
+version := "0.0.1"
 
 scalaVersion := "2.13.7"
-//scalacOptions += "-Ypartial-unification"
+coverageEnabled := true
 
 libraryDependencies ++= Seq(
   Dependencies.Tapir.AsyncMonix,
@@ -16,5 +14,11 @@ libraryDependencies ++= Seq(
   Dependencies.Config.PureConfig,
   Dependencies.Logging.Logback,
   Dependencies.Monix.Core,
-  Dependencies.Kafka.KafkaClient
+  Dependencies.Kafka.KafkaClient,
+  "org.scalatest" %% "scalatest" % "3.3.0-SNAP3" % Test,
+  "io.github.embeddedkafka" %% "embedded-kafka" % "2.8.1" % Test
+
 )
+
+parallelExecution in Test := false
+

@@ -5,3 +5,5 @@ case class ServiceProps(schemaRegistry: SchemaRegistry, kafka: Kafka, schrandom:
 case class SchemaRegistry(host: String, port: String)
 case class Kafka(host: String, port: String)
 case class Schrandom(port: String)
+
+case class AnyHostPort(host: String, port: String)
