@@ -9,6 +9,12 @@ trait KafkaConnector {
 
   def publishAvro()
 
-  def publishJson(topic: String, event: CancelableFuture[String], producer: KafkaProducer[String, String]): Unit
+  def publishSingleJson(topic: String, event: CancelableFuture[String], producer: KafkaProducer[String, String]): Unit
+
+  def publishMultipleJson(
+    topic: String,
+    events: CancelableFuture[List[String]],
+    producer: KafkaProducer[String, String]
+  ): Unit
 
 }

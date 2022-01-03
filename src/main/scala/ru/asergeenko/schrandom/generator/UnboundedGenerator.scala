@@ -10,10 +10,14 @@ class UnboundedGenerator(topic: String, behavior: GeneratorBehavior) extends Abs
   val eventFlooder   = new EventFlooder(behavior.schema)
   val kafkaProducer  = new KafkaSpecificProducer
 
-  override def run: Unit = {
+  override def run(): Unit = {
     logger.trace(s"Runnable invoked for topic=$topic")
-    kafkaProducer.publishJson(topic, eventFlooder.createSingleJsonEvent)
+    kafkaProducer.publishSingleJson(topic, eventFlooder.createSingleJsonEvent)
   }
 
-  override def getBehavior(): GeneratorBehavior = behavior
+  override def getBehavior: GeneratorBehavior = behavior
+
+  override def run(eventQty: Int): Unit = {
+
+  }
 }

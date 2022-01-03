@@ -24,8 +24,8 @@ object SchrandomController {
     port <- config.map(_.schrandom.port).toOption
   } yield AnyHostPort("localhost", port)
 
-  private val engageEndpoint = endpoint.get
-    .in("schrandom" / "engage")
+  private val engageUnboundedEndpoint = endpoint.get
+    .in("schrandom" / "engage" / "unbound")
     .in(query[String]("topic"))
     .in(query[String]("schema"))
     .in(query[String]("version"))
@@ -38,6 +38,23 @@ object SchrandomController {
       Future.successful[Either[Unit, String]](
         Right(s"Engagement request for topic=$topic, schema=$schema and version=$version is received.")
       )
+    }
+
+  private val engageBoundedEndpoint = endpoint.get
+    .in("schrandom" / "engage" / "bound")
+    .in(query[String]("topic"))
+    .in(query[String]("schema"))
+    .in(query[String]("version"))
+    .in(query[Int]("qty"))
+    .out(stringBody)
+    .serverLogic { case (topic, schema, version, qty) =>
+      schedulers.get(topic).foreach(_.cancel)
+      schedulers(topic) = WorkflowLogic.initiateRegistryLimitedQtyWorkflow(
+        PublisherSettings(topic, Option(schema), version, 0),
+        qty
+      )
+      Future.successful[Either[Unit, String]](
+        Right(s"Limited engagement request for topic=$topic, schema=$schema and version=$version is received."))
     }
 
   private val engageWithSchemaEndpoint = endpoint.post
@@ -74,9 +91,10 @@ object SchrandomController {
     }
 
   val endpoints = List(
-    engageEndpoint,
+    engageUnboundedEndpoint,
     engageWithSchemaEndpoint,
-    disengageEndpoint
+    disengageEndpoint,
+    engageBoundedEndpoint
   )
 
   private val swaggerEndpoints: List[ServerEndpoint[Any, Future]] = SwaggerInterpreter()
@@ -85,9 +103,10 @@ object SchrandomController {
   private val schrandomPort = maybeHostPort.map(_.port.toInt).getOrElse(1)
 
   NettyFutureServer()
-    .addEndpoint(engageEndpoint)
+    .addEndpoint(engageUnboundedEndpoint)
     .addEndpoint(disengageEndpoint)
     .addEndpoint(engageWithSchemaEndpoint)
+    .addEndpoint(engageBoundedEndpoint)
     .addEndpoints(swaggerEndpoints)
     .host("0.0.0.0")
     .port(schrandomPort)
