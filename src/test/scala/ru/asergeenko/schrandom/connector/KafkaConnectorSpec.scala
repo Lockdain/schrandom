@@ -22,7 +22,7 @@ class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAft
         val producer: KafkaConnector = new KafkaSpecificProducer
         val jsonProducer = producer.createJsonProducer("0.0.0.0:" + kafkaPort)
         val task = Task("test")
-        producer.publishJson("test", task.runToFuture, jsonProducer)
+        producer.publishSingleJson("test", task.runToFuture, jsonProducer)
         implicit val deserializer: Deserializer[String] = new StringDeserializer
         consumeFirstMessageFrom("test") shouldBe "test"
       }

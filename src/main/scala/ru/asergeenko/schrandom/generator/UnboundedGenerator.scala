@@ -12,7 +12,7 @@ class UnboundedGenerator(topic: String, behavior: GeneratorBehavior) extends Abs
 
   override def run: Unit = {
     logger.trace(s"Runnable invoked for topic=$topic")
-    kafkaProducer.publishJson(topic, eventFlooder.createSingleJsonEvent)
+    kafkaProducer.publishSingleJson(topic, eventFlooder.createSingleJsonEvent)
   }
 
   override def getBehavior(): GeneratorBehavior = behavior
