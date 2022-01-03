@@ -60,7 +60,9 @@ class KafkaSpecificProducer extends KafkaConnector {
     producer: KafkaProducer[String, String]
   ): Unit = {
     logger.trace(s"New JSON list will be published to the topic=$topic")
-
+    events.foreach { eventList =>
+      eventList.map(event => producer.send(new ProducerRecord[String, String](topic, event)))
+    }
   }
 
   override def publishAvro: Unit = {}
