@@ -1,11 +1,10 @@
 package ru.asergeenko.schrandom.intf
 
-import org.slf4j.LoggerFactory
 import ru.asergeenko.schrandom.generator.{BoundedGenerator, UnboundedGenerator}
-import ru.asergeenko.schrandom.settings.{GeneratorBehavior, GeneratorType, MessageType}
+import ru.asergeenko.schrandom.adt.{GeneratorBehavior, GeneratorType, MessageType}
+import ru.asergeenko.schrandom.tool.Logger
 
-object MessageGeneratorBuilder {
-  private val logger = LoggerFactory.getLogger(this.getClass.toString)
+object MessageGeneratorBuilder extends Logger {
 
   def build(topic: String, behavior: GeneratorBehavior): AbstractGenerator = {
     (behavior.messageType, behavior.genType) match {

@@ -1,12 +1,11 @@
 package ru.asergeenko.schrandom.generator
 
-import org.slf4j.LoggerFactory
 import ru.asergeenko.schrandom.intf.AbstractGenerator
 import ru.asergeenko.schrandom.connector.KafkaSpecificProducer
-import ru.asergeenko.schrandom.settings.GeneratorBehavior
+import ru.asergeenko.schrandom.adt.GeneratorBehavior
+import ru.asergeenko.schrandom.tool.Logger
 
-class UnboundedGenerator(topic: String, behavior: GeneratorBehavior) extends AbstractGenerator with Runnable {
-  private val logger = LoggerFactory.getLogger(this.getClass.toString)
+class UnboundedGenerator(topic: String, behavior: GeneratorBehavior) extends AbstractGenerator with Runnable with Logger {
   val eventFlooder   = new EventFlooder(behavior.schema)
   val kafkaProducer  = new KafkaSpecificProducer
 

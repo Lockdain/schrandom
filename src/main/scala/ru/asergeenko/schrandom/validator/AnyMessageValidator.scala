@@ -3,12 +3,12 @@ import org.apache.avro.Schema
 import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.specific.SpecificRecordBase
-import org.slf4j.LoggerFactory
+import ru.asergeenko.schrandom.tool.Logger
+
 import scala.util.Try
 import java.io.{ByteArrayInputStream, DataInputStream}
 
-object AnyMessageValidator extends MessageValidator {
-  private val logger = LoggerFactory.getLogger(this.getClass.toString)
+object AnyMessageValidator extends MessageValidator with Logger {
 
   override def validateJson(schema: Schema, message: String): Try[Boolean] = {
     logger.trace(s"Starting to validate a message against schema ${schema.getName}")

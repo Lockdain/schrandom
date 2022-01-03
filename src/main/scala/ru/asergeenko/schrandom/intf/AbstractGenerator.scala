@@ -1,6 +1,6 @@
 package ru.asergeenko.schrandom.intf
 
-import ru.asergeenko.schrandom.settings.GeneratorBehavior
+import ru.asergeenko.schrandom.adt.GeneratorBehavior
 
 trait AbstractGenerator extends Runnable {
   def run()

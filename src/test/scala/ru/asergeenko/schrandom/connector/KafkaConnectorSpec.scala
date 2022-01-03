@@ -11,8 +11,8 @@ import org.scalatest.BeforeAndAfterAll
 import ru.asergeenko.schrandom.generator.EventFlooder
 
 class KafkaConnectorSpec extends AnyWordSpecLike with Matchers with BeforeAndAfterAll with EmbeddedKafka {
-  val kafkaPort       = 6005
-  implicit val config = EmbeddedKafkaConfig(kafkaPort = kafkaPort)
+  val kafkaPort                            = 6005
+  implicit val config: EmbeddedKafkaConfig = EmbeddedKafkaConfig(kafkaPort = kafkaPort)
 
   override def beforeAll: Unit = {}
 

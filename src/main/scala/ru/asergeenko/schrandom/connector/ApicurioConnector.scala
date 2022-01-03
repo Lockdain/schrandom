@@ -3,17 +3,16 @@ package ru.asergeenko.schrandom.connector
 import monix.execution.CancelableFuture
 import monix.execution.Scheduler.Implicits.global
 import org.apache.avro.Schema
-import org.slf4j.LoggerFactory
 import pureconfig.ConfigReader.Result
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import ru.asergeenko.schrandom.conf.{ AnyHostPort, ServiceProps }
+import ru.asergeenko.schrandom.conf.{AnyHostPort, ServiceProps}
+import ru.asergeenko.schrandom.tool.Logger
 import sttp.client3.asynchttpclient.monix.AsyncHttpClientMonixBackend
-import sttp.client3.{ asString, basicRequest, Response, UriContext }
+import sttp.client3.{Response, UriContext, asString, basicRequest}
 
-object ApicurioConnector extends RegistryConnector {
+object ApicurioConnector extends RegistryConnector with Logger {
   private val config: Result[ServiceProps] = ConfigSource.default.load[ServiceProps]
-  private val logger                       = LoggerFactory.getLogger(this.getClass.toString)
   private val maybeHostPort: Option[AnyHostPort] = for {
              host <- config.map(_.schemaRegistry.host).toOption
              port <- config.map(_.schemaRegistry.port).toOption
