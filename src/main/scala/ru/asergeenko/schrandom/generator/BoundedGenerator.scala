@@ -10,10 +10,13 @@ class BoundedGenerator(topic: String, behavior: GeneratorBehavior) extends Abstr
   val eventFlooder   = new EventFlooder(behavior.schema)
   val kafkaProducer  = new KafkaSpecificProducer
 
-  override def run: Unit = {
+  override def run(eventQty: Int): Unit = {
     logger.trace(s"Runnable multi-message invoked for topic=$topic")
-    kafkaProducer.publishSingleJson(topic, eventFlooder.create
+    val events = eventFlooder.createMultipleJsonEvents(eventQty)
+    kafkaProducer.publishMultipleJson(topic, events)
   }
 
   override def getBehavior(): GeneratorBehavior = behavior
+
+  override def run(): Unit = ???
 }

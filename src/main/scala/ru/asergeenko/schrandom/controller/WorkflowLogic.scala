@@ -28,13 +28,13 @@ object WorkflowLogic {
     cancelable
   }
 
-  def initiateRegistryLimitedQtyWorkflow(settings: PublisherSettings, limit: Long): Cancelable = {
+  def initiateRegistryLimitedQtyWorkflow(settings: PublisherSettings, eventQty: Int): Cancelable = {
     logger.info(s"Registry qty limited workflow for topic=${settings.topic} was initiated")
     val eventualSchema = ApicurioConnector.getSchema(settings.schema.getOrElse(""), settings.version)
     val behavior       = GeneratorBehavior(eventualSchema, GeneratorType.BOUNDED, MessageType.JSON)
     val jsonGenerator  = MessageGeneratorBuilder.build(settings.topic, behavior)
 
-    scheduler.scheduleOnce(Duration(1, TimeUnit.SECONDS), jsonGenerator)
+    Task(jsonGenerator.run(eventQty)).runToFuture
   }
 
 

@@ -7,14 +7,10 @@ import ru.asergeenko.schrandom.settings.{GeneratorBehavior, GeneratorType, Messa
 object MessageGeneratorBuilder {
   private val logger = LoggerFactory.getLogger(this.getClass.toString)
 
-  def build(topic: String, behavior: GeneratorBehavior): Option[AbstractGenerator] = {
+  def build(topic: String, behavior: GeneratorBehavior): AbstractGenerator = {
     (behavior.messageType, behavior.genType) match {
-      case (MessageType.JSON, GeneratorType.UNBOUNDED) => Option(new UnboundedGenerator(topic, behavior))
-      case (MessageType.JSON, GeneratorType.BOUNDED) => Option(new BoundedGenerator(topic, behavior))
-      case _ => {
-        logger.error("Unknown message generator type.")
-        Option(Some)
-      }
+      case (MessageType.JSON, GeneratorType.UNBOUNDED) => new UnboundedGenerator(topic, behavior)
+      case (MessageType.JSON, GeneratorType.BOUNDED) => new BoundedGenerator(topic, behavior)
     }
   }
 }

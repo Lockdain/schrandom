@@ -8,8 +8,6 @@ import monix.execution.{ CancelableFuture, Scheduler }
 import org.slf4j.LoggerFactory
 import org.apache.kafka.clients.producer.{ KafkaProducer, ProducerRecord }
 import org.apache.kafka.common.serialization.StringSerializer
-import ru.asergeenko.schrandom.connector.ApicurioConnector.config
-
 import java.util.Properties
 
 class KafkaSpecificProducer extends KafkaConnector {
@@ -54,10 +52,10 @@ class KafkaSpecificProducer extends KafkaConnector {
     }
   }
 
-  def publishMultipleJson(
+  override def publishMultipleJson(
     topic: String,
     events: CancelableFuture[List[String]],
-    producer: KafkaProducer[String, String]
+    producer: KafkaProducer[String, String] = producer
   ): Unit = {
     logger.trace(s"New JSON list will be published to the topic=$topic")
     events.foreach { eventList =>
