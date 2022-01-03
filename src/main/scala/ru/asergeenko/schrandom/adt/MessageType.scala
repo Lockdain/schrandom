@@ -1,4 +1,4 @@
-package ru.asergeenko.schrandom.settings
+package ru.asergeenko.schrandom.adt
 
 sealed abstract class MessageType(source: String)
 

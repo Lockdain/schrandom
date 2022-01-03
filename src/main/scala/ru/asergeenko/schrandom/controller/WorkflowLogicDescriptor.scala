@@ -4,20 +4,20 @@ import monix.eval.Task
 import monix.execution.Cancelable
 import ru.asergeenko.schrandom.intf.MessageGeneratorBuilder
 import ru.asergeenko.schrandom.connector.ApicurioConnector
-import ru.asergeenko.schrandom.settings.{GeneratorBehavior, GeneratorType, MessageType, PublisherSettings}
+import ru.asergeenko.schrandom.adt.{GeneratorBehavior, GeneratorType, MessageType, PublisherSettings}
 import monix.execution.Scheduler.{global => scheduler}
 import monix.execution.Scheduler.Implicits.global
 import org.apache.avro.Schema
 import org.slf4j.LoggerFactory
+import ru.asergeenko.schrandom.tool.Logger
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 
-object WorkflowLogic {
-  private val logger = LoggerFactory.getLogger(this.getClass.toString)
+object WorkflowLogicDescriptor extends Logger {
 
   def initiateRegistryWorkflow(settings: PublisherSettings): Cancelable = {
-    logger.info(s"Registry workflow for topic=${settings.topic} was initiated")
+    logger.info(s"Registry continuous workflow for topic=${settings.topic} was initiated")
     val eventualSchema = ApicurioConnector.getSchema(settings.schema.getOrElse(""), settings.version)
     val behavior       = GeneratorBehavior(eventualSchema, GeneratorType.UNBOUNDED, MessageType.JSON)
     val jsonGenerator  = MessageGeneratorBuilder.build(settings.topic, behavior)
@@ -29,7 +29,7 @@ object WorkflowLogic {
   }
 
   def initiateRegistryLimitedQtyWorkflow(settings: PublisherSettings, eventQty: Int): Cancelable = {
-    logger.info(s"Registry qty limited workflow for topic=${settings.topic} was initiated")
+    logger.info(s"Registry limited quantity workflow for topic=${settings.topic} was initiated")
     val eventualSchema = ApicurioConnector.getSchema(settings.schema.getOrElse(""), settings.version)
     val behavior       = GeneratorBehavior(eventualSchema, GeneratorType.BOUNDED, MessageType.JSON)
     val jsonGenerator  = MessageGeneratorBuilder.build(settings.topic, behavior)
@@ -39,7 +39,7 @@ object WorkflowLogic {
 
 
   def initiateStandaloneWorkflow(settings: PublisherSettings, schemaBody: String): Cancelable = {
-    logger.info(s"Registry workflow for topic=${settings.topic} was initiated")
+    logger.info(s"External schema workflow for topic=${settings.topic} was initiated")
     // TODO: That looks strange
     val schemaTask = Task { Schema.parse(schemaBody) }
     val eventualSchema = schemaTask.runToFuture

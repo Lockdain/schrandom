@@ -2,17 +2,18 @@ package ru.asergeenko.schrandom.connector
 
 import pureconfig.ConfigReader.Result
 import pureconfig.ConfigSource
-import ru.asergeenko.schrandom.conf.{ AnyHostPort, ServiceProps }
+import ru.asergeenko.schrandom.conf.{AnyHostPort, ServiceProps}
 import pureconfig.generic.auto._
-import monix.execution.{ CancelableFuture, Scheduler }
+import monix.execution.{CancelableFuture, Scheduler}
 import org.slf4j.LoggerFactory
-import org.apache.kafka.clients.producer.{ KafkaProducer, ProducerRecord }
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.kafka.common.serialization.StringSerializer
+import ru.asergeenko.schrandom.tool.Logger
+
 import java.util.Properties
 
-class KafkaSpecificProducer extends KafkaConnector {
+class KafkaSpecificProducer extends KafkaConnector with Logger {
   private val config: Result[ServiceProps]       = ConfigSource.default.load[ServiceProps]
-  private val logger                             = LoggerFactory.getLogger(this.getClass.toString)
   private implicit val scheduler: Scheduler      = monix.execution.Scheduler.global
   private val maybeHostPort: Option[AnyHostPort] = for {
     host <- config.map(_.kafka.host).toOption
@@ -63,5 +64,5 @@ class KafkaSpecificProducer extends KafkaConnector {
     }
   }
 
-  override def publishAvro: Unit = {}
+  override def publishAvro(): Unit = {}
 }
