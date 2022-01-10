@@ -2,7 +2,7 @@ package ru.asergeenko.schrandom.controller
 
 import monix.execution.Cancelable
 import pureconfig.ConfigSource
-import ru.asergeenko.schrandom.conf.{AnyHostPort, ServiceProps}
+import ru.asergeenko.schrandom.conf.{ AnyHostPort, ServiceProps }
 import sttp.tapir._
 import sttp.tapir.server.netty.NettyFutureServer
 
@@ -26,10 +26,14 @@ object SchrandomLogicController extends Logger {
   private val engagementPath: EndpointInput[Unit] = "schrandom" / "engage"
   private val engageContinuousEndpoint            = endpoint.get
     .in(engagementPath / "continuous")
-    .in(query[String]("topic")).description("Destination topic name")
-    .in(query[String]("schema")).description("Schema name (as per Schema Registry)")
-    .in(query[String]("version")).description("Schema version (as per Schema Registry")
-    .in(query[Long]("period")).description("A period between two consecutive messages")
+    .in(query[String]("topic"))
+    .description("Destination topic name")
+    .in(query[String]("schema"))
+    .description("Schema name (as per Schema Registry)")
+    .in(query[String]("version"))
+    .description("Schema version (as per Schema Registry")
+    .in(query[Long]("period"))
+    .description("A period between two consecutive messages")
     .out(stringBody)
     .serverLogic { case (topic, schema, version, period) =>
       schedulers(topic) = WorkflowLogicDescriptor.initiateRegistryWorkflow(
@@ -42,10 +46,14 @@ object SchrandomLogicController extends Logger {
 
   private val engageLimitedMsgEndpoint = endpoint.get
     .in(engagementPath / "limited")
-    .in(query[String]("topic")).description("Destination topic name")
-    .in(query[String]("schema")).description("Schema name (as per Schema Registry)")
-    .in(query[String]("version")).description("Schema version (as per Schema Registry")
-    .in(query[Int]("msgQuantity")).description("How many messages should be published")
+    .in(query[String]("topic"))
+    .description("Destination topic name")
+    .in(query[String]("schema"))
+    .description("Schema name (as per Schema Registry)")
+    .in(query[String]("version"))
+    .description("Schema version (as per Schema Registry")
+    .in(query[Int]("msgQuantity"))
+    .description("How many messages should be published")
     .out(stringBody)
     .serverLogic { case (topic, schema, version, qty) =>
       schedulers.get(topic).foreach(_.cancel)
@@ -83,7 +91,8 @@ object SchrandomLogicController extends Logger {
   private val disengagementPath: EndpointInput[Unit] = "schrandom" / "disengage"
   private val disengageEndpoint                      = endpoint.get
     .in(disengagementPath)
-    .in(query[String]("topic")).description("Topic name to stop all processes")
+    .in(query[String]("topic"))
+    .description("Topic name to stop all processes")
     .out(stringBody)
     .serverLogic { topic =>
       schedulers.get(topic).foreach(_.cancel)
@@ -92,11 +101,25 @@ object SchrandomLogicController extends Logger {
       )
     }
 
+  private val disengageAllEndpoint = endpoint.get
+    .in(disengagementPath / "all")
+    .description("Stops all running processes.")
+    .out(stringBody)
+    .serverLogic { _ =>
+      schedulers.foreach { case (_, process) =>
+        process.cancel()
+      }
+      Future.successful[Either[Unit, String]](
+        Right(s"Disengagement request for all topics was received.")
+      )
+    }
+
   val endpoints = List(
     engageContinuousEndpoint,
     engageWithSchemaEndpoint,
+    engageLimitedMsgEndpoint,
     disengageEndpoint,
-    engageLimitedMsgEndpoint
+    disengageAllEndpoint
   )
 
   private val swaggerEndpoints: List[ServerEndpoint[Any, Future]] = SwaggerInterpreter()
