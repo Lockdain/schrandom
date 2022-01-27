@@ -3,13 +3,18 @@
 
 ## A swiss-army knife all-in-one tool for Apache Kafka and Schema Registry related projects
 
-### What is Schrandom?
+### What is Schrandom
 Schrandom aims to become a solid "all-in-one" testing tool for those who extensively use Apache Avro as a main data serialization format and thus are also familiar with Schema Registries and Apache Kafka.
 
 Schrandom addresses the following goals:
-* Provides API to generate random records according to the schema (both provided explicitly or from Schema Registry) and publish them to Kafka topic;
-* Allows generating load test profiles depending on your needs (you may define how many random messages you want to be generated or make the task continuous that may last forever providing you with a constant message stream);
-* Allows validating messages against schema obtained both from Schema Registry or provided explicitly;
+
+  * Provides API to generate random records according to the schema (both provided explicitly or from Schema Registry) and publish them to Kafka topic;
+
+
+  * Allows generating load test profiles depending on your needs (you may define how many random messages you want to be generated or make the task continuous that may last forever providing you with a constant message stream);
+
+
+  * Allows validating messages against schema obtained both from Schema Registry or provided explicitly;
 
 ### API
 Schrandom uses REST API as a control plane. Any function Schrandom provides can be accessed through the API.
@@ -19,8 +24,13 @@ Schrandom provides swagger documentation which is always accessible at `http://h
 The main endpoints are:
 `schrandom/engage`: used to assign message-generating processes to the service.
 It also splits into three branches:
+
 * **/continuos** for everlasting tasks;
+  
+
 * **/externalSchema** for tasks that utilizes explicit AVRO schemas;
+
+
 * **/limited** for bounded tasks that products a limited message sets;
 
 A set of `/schrandom/disengage` endpoints are used to cancel current tasks from the execution.
