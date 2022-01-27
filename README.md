@@ -38,6 +38,8 @@ You are able to use any packaging you want but we encourage you to go with `sbt-
 
 Please see the diagram below:
 
+![Diagram](https://github.com/Lockdain/schrandom/blob/master/doc/schema/schrandom_placement.png?raw=true)
+
 ### Under the hood
 Schrandom uses `Monix` as a main execution environment/scheduler. Each task created using REST API in fact translates to a specific `Runnable` that assigns to the scheduler.
 
