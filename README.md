@@ -48,3 +48,7 @@ Schrandom uses `Monix` as a main execution environment/scheduler. Each task crea
 Thanks to `Cancelable` Futures provided by Monix it is possible to cancel any running task at any time.
 
 Schrandom uses `Tapir` to describe HTTP-endpoints and generate swagger documentation along with `Netty` used as NIO-server.
+
+Please see the following diagram as a reference:
+
+![Diagram](https://github.com/Lockdain/schrandom/blob/master/doc/schema/schrandom_architecture.png?raw=true)
