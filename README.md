@@ -21,9 +21,9 @@ The main endpoints are:
 `schrandom/engage`: used to assign message-generating processes to the service.
 It also splits into three branches:
 
-* **/continuos** for everlasting tasks;
-* **/externalSchema** for tasks that utilizes explicit AVRO schemas;
-* **/limited** for bounded tasks that products a limited message sets;
+* **/continuos** for everlasting tasks executing until interrupted explicitly;
+* **/externalSchema** for tasks that use explicit (user-provided) AVRO schemas;
+* **/limited** for bounded tasks that produce a limited message sets;
 
 A set of `/schrandom/disengage` endpoints are used to cancel current tasks from the execution.
 
